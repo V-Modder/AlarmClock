@@ -3,7 +3,7 @@ set -e
 
 desktopPath=$(echo ~)/Desktop
 [ -e AlarmClock.jar ] && rm AlarmClock.jar
-[ -e alarm_clock.png ] && rm alarm_clock.png
+[ -e alarm_clock.png ] && rm alarm_clock.xpm
 [ -e ${desktopPath}/AlarmClock.desktop ] && rm ${desktopPath}/AlarmClock.desktop
 
 wget -O AlarmClock.jar  https://raw.githubusercontent.com/V-Modder/AlarmClock/master/bin/AlarmClock.jar
