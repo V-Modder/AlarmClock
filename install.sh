@@ -1,6 +1,7 @@
 #!/bin/bash
+set -e
 
-desktopPath=$(~)
+desktopPath=$(echo ~)
 [ -e AlarmClock.jar ] && rm AlarmClock.jar
 [ -e alarm_clock.png ] && rm alarm_clock.png
 [ -e ${desktopPath}/AlarmClock.desktop ] && rm ${desktopPath}/AlarmClock.desktop
