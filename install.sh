@@ -6,11 +6,12 @@ desktopPath=$(echo ~)/Desktop
 [ -e alarm_clock.png ] && rm alarm_clock.png
 [ -e ${desktopPath}/AlarmClock.desktop ] && rm ${desktopPath}/AlarmClock.desktop
 
-wget -O AlarmClock.jar https://github.com/V-Modder/AlarmClock/blob/master/bin/AlarmClock.jar
-wget -O alarm_clock.png https://github.com/V-Modder/AlarmClock/blob/master/bin/alarm_clock.png
+wget -O AlarmClock.jar  https://raw.githubusercontent.com/V-Modder/AlarmClock/master/bin/AlarmClock.jar
+wget -O alarm_clock.xpm https://raw.githubusercontent.com/V-Modder/AlarmClock/master/bin/alarm_clock.xpm
 
 jarPath=$(realpath AlarmClock.jar)
-pngPath=$(realpath alarm_clock.png)
+pngPath=$(realpath alarm_clock.xpm)
+workingDir=$(realpath .)
 
 desktopContent=$(cat <<EOF
 [Desktop Entry]
@@ -18,6 +19,7 @@ desktopContent=$(cat <<EOF
  Comment=Simple alarm clock
  Icon=${pngPath}
  Exec=java -jar ${jarPath}
+ Path=${workingDir}
  Type=Application
  Encoding=UTF-8
  Terminal=false

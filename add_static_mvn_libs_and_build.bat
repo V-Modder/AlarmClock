@@ -18,5 +18,5 @@ echo building bin dir
 IF EXIST bin rmdir /s /q bin
 mkdir bin
 move target\AlarmClock.jar bin\AlarmClock.jar
-copy src\main\resources\alarm_clock.png bin\alarm_clock.png
+copy src\main\resources\alarm_clock.xpm bin\alarm_clock.xpm
 pause
