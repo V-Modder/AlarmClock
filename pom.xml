@@ -12,8 +12,28 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>bla</id>
+			<name>bla</name>
+			<url>http://murky.fishbowldev.com:8081/nexus/content/repositories/releases</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>jxbrowser</groupId>
+			<artifactId>jxbrowser</artifactId>
+			<version>6.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>jxbrowser</groupId>
+			<artifactId>jxbrowser-linux</artifactId>
+			<version>6.1.1</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>com.alee</groupId>
 			<artifactId>weblaf</artifactId>

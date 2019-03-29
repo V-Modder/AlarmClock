@@ -32,6 +32,7 @@ public class HolidayChecker {
 
 	public boolean isHoliday(Date date) throws Exception {
 
+		boolean isHoliday = false;
 		Date startDate = this.getStartDate(date);
 		Date endDate = this.getEndDate(date);
 		CalendarFolder cf = CalendarFolder.bind(exchangeService, WellKnownFolderName.Calendar);
@@ -39,11 +40,13 @@ public class HolidayChecker {
 		for (Appointment appt : findResults.getItems()) {
 			appt.load(PropertySet.FirstClassProperties);
 			if (appt.getSubject().contains("Urlaub")) {
-				return true;
+				isHoliday = true;
 			}
 		}
 
-		return false;
+		isHoliday = isHoliday | PublicHokiday.isPublicHolidayToday();
+
+		return isHoliday;
 	}
 
 	private Date getStartDate(Date date) {

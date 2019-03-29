@@ -35,7 +35,7 @@ import com.ewers.alarmclock.components.MyWebCalender;
 import com.ewers.alarmclock.components.RoundedPanel;
 import com.ewers.alarmclock.components.RoundedStripesButton;
 import com.ewers.alarmclock.components.SettingsPanel;
-import com.ewers.alarmclock.components.WeatherPanel;
+import com.ewers.alarmclock.components.BrowserPanel;
 import com.ewers.alarmclock.display.Display;
 
 public class AlarmClock extends JFrame implements ActionListener, MouseListener {
@@ -144,7 +144,7 @@ public class AlarmClock extends JFrame implements ActionListener, MouseListener 
 		this.displayOffButton.addMouseListener(this);
 		this.mainPanel.add(this.displayOffButton);
 
-		this.weatherpanel = new WeatherPanel();
+		this.weatherpanel = new BrowserPanel();
 		this.mainPanel.add(this.weatherpanel);
 
 		this.timeLabel = new JLabel();
