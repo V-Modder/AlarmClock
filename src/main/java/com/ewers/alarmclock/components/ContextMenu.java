@@ -47,7 +47,6 @@ public class ContextMenu extends JPanel implements ActionListener {
 		this.add(exit);
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(ACTION_COMMAND_EXIT)) {
 			System.exit(0);

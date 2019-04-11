@@ -101,7 +101,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
 		dlg.setLocaleL(Locale.getDefault());
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
 		if (actionEvent.getActionCommand().equals(ACTION_COMMAND_EXIT)) {
 			if (this.saveConfig()) {
@@ -161,13 +160,13 @@ public class SettingsPanel extends JPanel implements ActionListener {
 					}
 					alarm.setTime(new Time(s));
 				}
-				alarm.setMonday((boolean) this.model.getValueAt(y, 2));
-				alarm.setTuesday((boolean) this.model.getValueAt(y, 3));
-				alarm.setWendsday((boolean) this.model.getValueAt(y, 4));
-				alarm.setThursday((boolean) this.model.getValueAt(y, 5));
-				alarm.setFriday((boolean) this.model.getValueAt(y, 6));
-				alarm.setSaturday((boolean) this.model.getValueAt(y, 7));
-				alarm.setSunday((boolean) this.model.getValueAt(y, 8));
+				alarm.setMonday((Boolean) this.model.getValueAt(y, 2));
+				alarm.setTuesday((Boolean) this.model.getValueAt(y, 3));
+				alarm.setWendsday((Boolean) this.model.getValueAt(y, 4));
+				alarm.setThursday((Boolean) this.model.getValueAt(y, 5));
+				alarm.setFriday((Boolean) this.model.getValueAt(y, 6));
+				alarm.setSaturday((Boolean) this.model.getValueAt(y, 7));
+				alarm.setSunday((Boolean) this.model.getValueAt(y, 8));
 				Configuration.getInstance().getAlarms().add(alarm);
 			}
 

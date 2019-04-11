@@ -58,19 +58,21 @@ public class AlarmPanel extends JPanel implements Worker, MouseListener {
 			e.printStackTrace();
 		}
 
-		InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(LOCAL_FILE);
+		File targetFile = new File(LOCAL_FILE);
+		if (!targetFile.exists()) {
+			InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(LOCAL_FILE);
 
-		byte[] buffer;
-		try {
-			buffer = new byte[resourceStream.available()];
-			resourceStream.read(buffer);
+			byte[] buffer;
+			try {
+				buffer = new byte[resourceStream.available()];
+				resourceStream.read(buffer);
 
-			File targetFile = new File(LOCAL_FILE);
-			OutputStream outStream = new FileOutputStream(targetFile);
-			outStream.write(buffer);
-			outStream.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+				OutputStream outStream = new FileOutputStream(targetFile);
+				outStream.write(buffer);
+				outStream.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -120,7 +122,11 @@ public class AlarmPanel extends JPanel implements Worker, MouseListener {
 		} catch (Exception e) {
 			try {
 				this.musicPlayer.playFile(LOCAL_FILE);
-			} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+			} catch (UnsupportedAudioFileException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (LineUnavailableException e1) {
 				e1.printStackTrace();
 			}
 		}
@@ -149,7 +155,6 @@ public class AlarmPanel extends JPanel implements Worker, MouseListener {
 		}
 	}
 
-	@Override
 	public void doWork(Parameters args) {
 		Calendar calendar = Calendar.getInstance();
 		while (true) {
@@ -173,36 +178,29 @@ public class AlarmPanel extends JPanel implements Worker, MouseListener {
 		}
 	}
 
-	@Override
 	public void workerFinished(Finished args) {
 	}
 
-	@Override
 	public void progressChanged(ProgressChanged args) {
 		this.setVisible(true);
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent arg0) {
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent arg0) {
 
 	}
 
-	@Override
 	public void mouseExited(MouseEvent arg0) {
 
 	}
 
-	@Override
 	public void mousePressed(MouseEvent arg0) {
 		this.isPlaying = false;
 		this.setVisible(false);
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent arg0) {
 	}
 

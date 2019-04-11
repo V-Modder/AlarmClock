@@ -39,7 +39,7 @@ public class SwingCalendar extends JFrame {
 		panel.setLayout(new BorderLayout());
 		panel.add(label, BorderLayout.CENTER);
 
-		List<String> columns = new ArrayList<>();
+		List<String> columns = new ArrayList<String>();
 		for (int i = 2; i <= 7; i++) {
 			cal.set(Calendar.DAY_OF_WEEK, i);
 			columns.add(cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.GERMAN));

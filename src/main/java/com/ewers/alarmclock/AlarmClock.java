@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Predicate;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -30,21 +31,20 @@ import javax.swing.Timer;
 import com.alee.extended.date.WebCalendar;
 import com.alee.laf.WebLookAndFeel;
 import com.ewers.alarmclock.components.AlarmPanel;
+import com.ewers.alarmclock.components.BrowserPanel;
 import com.ewers.alarmclock.components.ContextMenu;
 import com.ewers.alarmclock.components.MyWebCalender;
-import com.ewers.alarmclock.components.RoundedPanel;
 import com.ewers.alarmclock.components.RoundedStripesButton;
 import com.ewers.alarmclock.components.SettingsPanel;
-import com.ewers.alarmclock.components.BrowserPanel;
 import com.ewers.alarmclock.display.Display;
 
-public class AlarmClock extends JFrame implements ActionListener, MouseListener {
+public class AlarmClock extends JFrame implements ActionListener, MouseListener, Runnable {
 
 	private static final long serialVersionUID = 1L;
 
 	private JLayeredPane contentPane;
 	private JPanel mainPanel;
-	private RoundedPanel weatherpanel;
+	private BrowserPanel browserPanel;
 	private JLabel timeLabel;
 	private RoundedStripesButton configButton;
 	private JLabel displayOffButton;
@@ -55,7 +55,12 @@ public class AlarmClock extends JFrame implements ActionListener, MouseListener 
 	private AlarmPanel alarmPanel;
 
 	public static void main(String[] args) {
-		if (Arrays.stream(args).anyMatch(arg -> arg.equals("-debug"))) {
+
+		if (Arrays.stream(args).anyMatch(new Predicate<String>() {
+			public boolean test(String arg) {
+				return arg.equals("-debug");
+			}
+		})) {
 			Constants.isDebug = true;
 		}
 		Constants.isRaspberryPi = Display.isRaspberryPi();
@@ -74,155 +79,166 @@ public class AlarmClock extends JFrame implements ActionListener, MouseListener 
 	}
 
 	public AlarmClock() throws IOException {
-		Color transparent = new Color(0, 0, 0, 1);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setUndecorated(true);
-		this.getContentPane().setLayout(null);
+		setLocationByPlatform(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
 		if (!Constants.isDebug) {
-			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			setUndecorated(true);
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
 			BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
-			this.setCursor(blankCursor);
+			setCursor(blankCursor);
 		}
-		this.setBounds(0, 0, 800, 480);
-		this.setTitle("AlarmClock");
-		this.setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("gear.png")).getImage());
-		this.addMouseListener(this);
+		setBounds(0, 0, 800, 480);
+		setTitle("AlarmClock");
+		setIconImage(new ImageIcon(getClass().getClassLoader().getResource("gear.png")).getImage());
+		addMouseListener(this);
 
-		this.timer = new Timer(1000, this);
-		this.timer.start();
-
-		this.contentPane = new JLayeredPane();
-		this.contentPane.setBackground(transparent);
-		this.contentPane.setLayout(null);
-		this.contentPane.setPreferredSize(new Dimension(800, 480));
-		this.contentPane.setBounds(0, 0, 800, 480);
-		this.setContentPane(contentPane);
-
-		this.mainPanel = new JPanel() {
-			private static final long serialVersionUID = 1L;
-			public Image backgroundImage = new ImageIcon(this.getClass().getClassLoader().getResource("background.jpg")).getImage();
-
-			public void paintComponent(Graphics g) {
-				g.drawImage(backgroundImage, 0, 0, null);
-				super.paintComponent(g);
-			}
-		};
-		this.mainPanel.setBackground(transparent);
-		this.mainPanel.setPreferredSize(new Dimension(800, 480));
-		this.mainPanel.setBounds(0, 0, 800, 480);
-		this.mainPanel.setName("mainPanel");
-		this.contentPane.add(this.mainPanel);
-		this.contentPane.setLayer(this.mainPanel, 0);
-		this.mainPanel.setLayout(null);
-
-		// Image img = new ImageIcon(this.getClass().getClassLoader().getResource("gear.png")).getImage();
-		// img = ImageHelper.resize(img, 25, 25);
-		this.configButton = new RoundedStripesButton();
-		this.configButton.setBackground(transparent);
-		this.configButton.setStripeColor(Color.WHITE);
-		this.configButton.setStripeCount(3);
-		this.configButton.setStripeThikness(2);
-		this.configButton.setSize(new Dimension(40, 40));
-		this.configButton.setPreferredSize(new Dimension(40, 40));
-		this.configButton.setMinimumSize(new Dimension(40, 40));
-		this.configButton.setContentAreaFilled(false);
-		this.configButton.setLocation(760, 0);
-		this.configButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		this.configButton.addActionListener(this);
-		this.mainPanel.add(this.configButton);
-
-		Image imgLight = new ImageIcon(this.getClass().getClassLoader().getResource("light.png")).getImage();
-		imgLight = ImageHelper.resize(imgLight, 25, 25);
-		this.displayOffButton = new JLabel(new ImageIcon(imgLight));
-		this.displayOffButton.setBackground(transparent);
-		this.displayOffButton.setSize(new Dimension(40, 40));
-		this.displayOffButton.setPreferredSize(new Dimension(40, 40));
-		this.displayOffButton.setMinimumSize(new Dimension(40, 40));
-		this.displayOffButton.setLocation(710, 0);
-		this.displayOffButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		this.displayOffButton.addMouseListener(this);
-		this.mainPanel.add(this.displayOffButton);
-
-		this.weatherpanel = new BrowserPanel();
-		this.mainPanel.add(this.weatherpanel);
-
-		this.timeLabel = new JLabel();
-		this.timeLabel.setBounds(0, 0, 400, 240);
-		this.timeLabel.setBackground(Color.BLACK);
-		this.timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		this.timeLabel.setVerticalAlignment(SwingConstants.CENTER);
-		this.timeLabel.setForeground(Color.WHITE);
-		this.timeLabel.setText("<html><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><span style=\"font-size: 14px;\">DAY</span></span></p><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><strong><span style=\"font-size: 22px;\">TIME</span></strong><span style=\"font-size: 12px;\">:SECONDS</span></span></p><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><span style=\"font-size: 14px;\">DATE</span></span></p></html>");
-		this.mainPanel.add(this.timeLabel);
-
-		this.calendar = new MyWebCalender();
-		this.calendar.setBounds(75, 260, 250, 200);
-		this.calendar.setDate(new Date(), true);
-		this.calendar.setDisplayWeekNumbers(false);
-		this.calendar.setHorizontalSlide(false);
-		this.calendar.setEnabled(false);
-		this.calendar.setAnimate(true);
-		this.calendar.setTitleFormat(new SimpleDateFormat("MMMM"));
-		this.mainPanel.add(this.calendar);
-
-		this.settingsPanel = new SettingsPanel();
-		this.settingsPanel.setName("settingsPanel");
-		this.contentPane.add(this.settingsPanel);
-		this.contentPane.setLayer(this.settingsPanel, 1);
-
-		this.contextMenu = new ContextMenu();
-		this.contextMenu.setName("contextMenu");
-		this.contentPane.add(this.contextMenu);
-		this.contentPane.setLayer(this.contextMenu, 2);
-
-		this.alarmPanel = new AlarmPanel();
-		this.contentPane.add(this.alarmPanel);
-		this.contentPane.setLayer(this.alarmPanel, 3);
+		timer = new Timer(1000, this);
+		timer.start();
+		new Thread(this).start();
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.timer && this.timeLabel != null && this.calendar != null) {
+		if (e.getSource() == timer && timeLabel != null && calendar != null) {
 			String html = "<html><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><strong><span style=\"font-size: 50px;\"><TIME></span></strong><span style=\"font-size: 25px;\">:<SECONDS></span></span></p></html>";
 			SimpleDateFormat sdf = new SimpleDateFormat("kk:mm");
 			Date date = new Date();
 			html = html.replace("<TIME>", sdf.format(date));
 			sdf = new SimpleDateFormat("ss");
 			html = html.replace("<SECONDS>", sdf.format(date));
-			this.timeLabel.setText(html);
-			this.calendar.setDate(date, true);
-			this.calendar.invalidate();
+			timeLabel.setText(html);
+			calendar.setDate(date, true);
+			calendar.invalidate();
 			return;
-		} else if (e.getSource() == this.configButton) {
-			this.contextMenu.setVisible(true);
+		} else if (e.getSource() == configButton) {
+			contextMenu.setVisible(true);
 		}
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e) {
 	}
 
-	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.getSource() == this.displayOffButton) {
+		if (e.getSource() == displayOffButton) {
 			if (Constants.isRaspberryPi) {
 				Display.startScrennSaver();
 			}
 		} else {
-			this.contextMenu.setVisible(false);
+			contextMenu.setVisible(false);
 		}
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent e) {
+	}
+
+	public void run() {
+		Color transparent = new Color(0, 0, 0, 1);
+		contentPane = new JLayeredPane();
+		contentPane.setBackground(transparent);
+		contentPane.setLayout(null);
+		contentPane.setPreferredSize(new Dimension(800, 480));
+		contentPane.setBounds(0, 0, 800, 480);
+		setContentPane(contentPane);
+
+		mainPanel = new JPanel() {
+			private static final long serialVersionUID = 1L;
+			public Image backgroundImage = new ImageIcon(getClass().getClassLoader().getResource("background.jpg")).getImage();
+
+			public void paintComponent(Graphics g) {
+				g.drawImage(backgroundImage, 0, 0, null);
+				super.paintComponent(g);
+			}
+		};
+		mainPanel.setBackground(transparent);
+		mainPanel.setPreferredSize(new Dimension(800, 480));
+		mainPanel.setBounds(0, 0, 800, 480);
+		mainPanel.setName("mainPanel");
+		contentPane.add(mainPanel);
+		contentPane.setLayer(mainPanel, 0);
+		mainPanel.setLayout(null);
+
+		configButton = new RoundedStripesButton();
+		configButton.setBackground(transparent);
+		configButton.setStripeColor(Color.WHITE);
+		configButton.setStripeCount(3);
+		configButton.setStripeThikness(2);
+		configButton.setSize(new Dimension(40, 40));
+		configButton.setPreferredSize(new Dimension(40, 40));
+		configButton.setMinimumSize(new Dimension(40, 40));
+		configButton.setContentAreaFilled(false);
+		configButton.setLocation(760, 0);
+		configButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		configButton.addActionListener(this);
+		mainPanel.add(configButton);
+
+		Image imgLight = new ImageIcon(getClass().getClassLoader().getResource("light.png")).getImage();
+		imgLight = ImageHelper.resize(imgLight, 25, 25);
+		displayOffButton = new JLabel(new ImageIcon(imgLight));
+		displayOffButton.setBackground(transparent);
+		displayOffButton.setSize(new Dimension(40, 40));
+		displayOffButton.setPreferredSize(new Dimension(40, 40));
+		displayOffButton.setMinimumSize(new Dimension(40, 40));
+		displayOffButton.setLocation(710, 0);
+		displayOffButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		displayOffButton.addMouseListener(this);
+		mainPanel.add(displayOffButton);
+
+		timeLabel = new JLabel();
+		timeLabel.setBounds(0, 0, 400, 240);
+		timeLabel.setBackground(Color.BLACK);
+		timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		timeLabel.setVerticalAlignment(SwingConstants.CENTER);
+		timeLabel.setForeground(Color.WHITE);
+		timeLabel.setText("<html><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><span style=\"font-size: 14px;\">DAY</span></span></p><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><strong><span style=\"font-size: 22px;\">TIME</span></strong><span style=\"font-size: 12px;\">:SECONDS</span></span></p><p><span style=\"font-family:trebuchet ms,helvetica,sans-serif;\"><span style=\"font-size: 14px;\">DATE</span></span></p></html>");
+		mainPanel.add(timeLabel);
+
+		initCalendar();
+		initBrowserPanel();
+
+		settingsPanel = new SettingsPanel();
+		settingsPanel.setName("settingsPanel");
+		contentPane.add(settingsPanel);
+		contentPane.setLayer(settingsPanel, 1);
+
+		contextMenu = new ContextMenu();
+		contextMenu.setName("contextMenu");
+		contentPane.add(contextMenu);
+		contentPane.setLayer(contextMenu, 2);
+
+		alarmPanel = new AlarmPanel();
+		contentPane.add(alarmPanel);
+		contentPane.setLayer(alarmPanel, 3);
+	}
+
+	private void initCalendar() {
+		calendar = new MyWebCalender();
+		calendar.setBounds(75, 260, 250, 200);
+		calendar.setDate(new Date(), true);
+		calendar.setDisplayWeekNumbers(false);
+		calendar.setHorizontalSlide(false);
+		calendar.setEnabled(false);
+		calendar.setAnimate(true);
+		calendar.setTitleFormat(new SimpleDateFormat("MMMM"));
+		mainPanel.add(calendar);
+	}
+
+	private void initBrowserPanel() {
+		browserPanel = new BrowserPanel();
+		// JLabel p = new JLabel();
+		// p.setBounds(400, 20, 400, 240);
+		// p.setBackground(Color.BLACK);
+		// p.setForeground(Color.magenta);
+		// p.setHorizontalAlignment(SwingConstants.CENTER);
+		// p.setVerticalAlignment(SwingConstants.CENTER);
+		// p.setForeground(Color.WHITE);
+		// p.setText("jzthjdzthjhztdhthf");
+		mainPanel.add(browserPanel);
 	}
 }

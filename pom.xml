@@ -8,29 +8,42 @@
 	<name>AlarmClock.jar</name>
 	<description>AlarmClock</description>
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
-	
-	<repositories>
-		<repository>
-			<id>bla</id>
-			<name>bla</name>
-			<url>http://murky.fishbowldev.com:8081/nexus/content/repositories/releases</url>
-		</repository>
-	</repositories>
 
+	<!-- <repositories> <repository> <id>teamdev</id> <url>http://maven.teamdev.com/repository/products</url> 
+		</repository> </repositories> -->
 	<dependencies>
+		<!-- <dependency> <groupId>com.teamdev.jxbrowser</groupId> <artifactId>jxbrowser-cross-platform</artifactId> 
+			<version>${jx.version}</version> <type>pom</type> </dependency> -->
+
 		<dependency>
-			<groupId>jxbrowser</groupId>
-			<artifactId>jxbrowser</artifactId>
-			<version>6.1.1</version>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>11.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>jxbrowser</groupId>
-			<artifactId>jxbrowser-linux</artifactId>
-			<version>6.1.1</version>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-graphics</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-base</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-media</artifactId>
+			<version>11.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>11.0.2</version>
 		</dependency>
 
 
@@ -65,11 +78,6 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.soundlibs</groupId>
-			<artifactId>mp3spi</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.netbeans.lib.awtextra</groupId>
 			<artifactId>AbsoluteLayout</artifactId>
 			<version>1.0.0</version>
@@ -91,10 +99,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.1</version>
+				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<!--<target>1.8</target>
+					<source>1.8</source>-->
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>

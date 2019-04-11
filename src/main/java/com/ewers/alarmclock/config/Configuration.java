@@ -41,7 +41,7 @@ public class Configuration {
 	private List<Alarm> alarms;
 
 	public Configuration() {
-		this.alarms = new ArrayList<>();
+		this.alarms = new ArrayList<Alarm>();
 	}
 
 	public void writeToFile() {
